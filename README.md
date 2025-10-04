@@ -1,2 +1,2 @@
 # HealthBotPlus
-HealthBot Plus is an interactive web-based health assistant that empowers users to manage and monitor their wellness. It combines AI-driven chatbot guidance, real-time symptom checking, and personal health tracking in one clean, user-friendly interface.
+HealthBot Plus is a modern, interactive, web-based personal health assistant designed to help users monitor their health, learn about healthy habits, and check potential symptoms. It combines AI-like features with a clean, user-friendly interface.

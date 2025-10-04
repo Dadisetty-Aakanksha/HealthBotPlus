@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HealthBot Plus - Your Health Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #3ec9b0;
+    --secondary: #f0f9ff;
+    --accent: #ffb54d;
+    --bg: #eafaf3;
+    --user-bubble: #fffbe7;
+    --bot-bubble: #d1fcfa;
+    --shadow: 0 12px 40px rgba(80, 205, 185, 0.13), 0 2px 15px #d5f8ee60;
+  }
+  body {
+    margin:0; font-family:'Montserrat', Arial, sans-serif;
+    background: linear-gradient(120deg, #b2ffd9 30%, #e8e6ff 100%);
+    min-height: 100vh;
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 30px 12px;
+  }
+  .container {
+    background: #fff;
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+    max-width: 450px; width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1rem 0.5rem 1rem;
+    gap: 0.7rem;
+    min-height: 90vh;
+    overflow: hidden;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.2em;
+  }
+  .header .logo {
+    font-size: 2.3em;
+    background: linear-gradient(120deg, #65f0e8 15%, #ffecb6 85%);
+    border-radius: 12px;
+    padding: 2px 12px;
+    box-shadow: 0 2px 10px #d9fff5a6;
+  }
+  .header h1 {
+    margin: 0; font-weight: 700;
+    font-size: 1.4em; color: var(--primary);
+    letter-spacing: -0.5px;
+  }
+  #language-selector {
+    margin-left: auto;
+    border-radius: 10px;
+    border:none;
+    font-size:1em;
+    padding:5px 12px;
+    background: #effbf4;
+    color: #28b59b;
+    cursor:pointer;
+    font-weight: 500;
+    box-shadow: 0 2px 9px #ceaeeec2;
+  }
+  .alert-bar {
+    margin: .2em 0 .7em 0;
+    background: linear-gradient(90deg,#fff7ea 20%, #eafde3 95%);
+    color: #da8d00;
+    border-radius: 12px;
+    box-shadow: 0 1px 8px #f7eabb2a;
+    padding: 0.7em 1em;
+    text-align:center;
+    font-size:1em;
+    font-weight:bold;
+    animation: alertin 1.2s;
+    letter-spacing: 0.2px;
+  }
+  @keyframes alertin {
+    0% {opacity:0; transform:translateY(-30px);}
+    100% {opacity:1; transform:translateY(0);}
+  }
+  .hero {
+    display: flex;
+    gap:1.2em;
+    align-items: center;
+    background: linear-gradient(98deg,#eafcff 55%, #fef6fb 120%);
+    margin-bottom: .7rem;
+    padding: 14px 18px;
+    border-radius: 16px;
+    box-shadow: 0 1px 9px #d2fbff19;
+  }
+  .hero-content h2 {
+    font-weight: 700;
+    color: #34ba9d;
+    font-size: 1.09em;
+    margin: 0 0 7px 0;
+    letter-spacing: -0.5px;
+  }
+  .hero-content p {
+    font-size: 0.97em;
+    margin: 0 0 8px 0;
+    color: #388e8e;
+    font-weight: 500;
+    opacity: .96;
+  }
+  .hero-content .caption {
+    color: #2b6b8a;
+    font-size:0.93em;
+  }
+  .chatbox {
+    background: var(--bg);
+    border-radius: 16px;
+    padding: 1em 0.7em 0.4em 0.7em;
+    flex: 1;
+    min-height: 200px;
+    max-height: 280px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-size: 1em;
+  }
+  .bot-msg, .user-msg {
+    border-radius:18px;
+    font-size:1.03em;
+    max-width:82%;
+    padding: .76em 1em;
+    box-shadow:0 2px 6px #e3fdee44;
+    position:relative;
+    animation: fadeIn .6s;
+    font-weight:600;
+    line-height: 1.38em;
+    word-break: break-word;
+    white-space: pre-line;
+  }
+  .bot-msg {
+    background: linear-gradient(80deg,#affff5 70%, #f7e4ff 120%);
+    color:#217175;
+    align-self: flex-start;
+  }
+  .bot-msg::before { content:"🤖 "; }
+  .user-msg {
+    background: var(--user-bubble);
+    color:#663b27;
+    align-self:flex-end;
+    border-bottom-right-radius: 6px;
+  }
+  .user-msg::after { content:" 🧑"; }
+  @keyframes fadeIn {0%{opacity:0;transform:translateY(20px);}100%{opacity:1;transform:translateY(0);}}
+  .input-area {
+    display: flex; gap: 10px; margin: 13px 0 4px 0;
+  }
+  #user-input {
+    flex: 1;
+    font-size: 1em;
+    padding: 0.76em;
+    border:2px solid #bdfbea;
+    border-radius:12px;
+    background:#fbffff;
+    font-family:inherit;
+    font-weight: 600;
+    transition: border 0.2s;
+  }
+  #user-input:focus { border:2px solid var(--primary);}
+  .input-area button {
+    background: linear-gradient(90deg,#36d5b6 45%, #7ad6fc 120%);
+    font-weight:700; color:#fff;
+    border-radius:11px; font-size:1.08em;
+    padding:0 19px;
+    box-shadow:0 2px 12px #b4f3fc44;
+    border:none; cursor:pointer;
+    transition:background 0.18s;
+  }
+  .input-area button:hover {
+    background:linear-gradient(90deg,#17bb90 20%, #18b3ba 100%);
+  }
+  .footer {
+    margin-top:9px;
+    color:var(--primary);
+    text-align:center;
+    font-size:0.97em;
+  }
+  .footer a {color:#33b0e6;text-decoration:none;}
+  
+  /* Additional UI for quiz and tracking */
+  .section-buttons {
+    margin: 10px 0 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .section-buttons button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 18px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px #6ae3c5aa;
+    transition: background 0.25s ease;
+  }
+  .section-buttons button:hover {
+    background: #2ca891;
+  }
+  /* Quiz container */
+  .quiz-container {
+    background: #fefefe;
+    border-radius: 14px;
+    padding: 15px 20px;
+    box-shadow: 0 5px 25px #e8edea94;
+    margin-bottom: 18px;
+  }
+  .quiz-question {
+    font-weight: 600;
+    font-size: 1.1em;
+    margin-bottom: 14px;
+    color: var(--primary);
+  }
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .quiz-options label {
+    background: var(--bot-bubble);
+    padding: 10px 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+    user-select: none;
+  }
+  .quiz-options input[type=radio] {
+    display: none;
+  }
+  .quiz-options input[type=radio]:checked+label {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px #58bea2cc;
+  }
+  .quiz-submit-btn {
+    margin-top: 14px;
+    cursor: pointer;
+    border-radius: 20px;
+    padding: 11px 24px;
+    border: none;
+    font-weight: 700;
+    font-size: 1rem;
+    background: var(--accent);
+    color: #452c06;
+    box-shadow: 0 6px 18px #ffcc7592;
+    transition: box-shadow 0.3s ease;
+  }
+  .quiz-submit-btn:hover {
+    box-shadow: 0 8px 24px #ffdd7dbf;
+  }
+  
+  /* Tracking inputs */
+  .tracker-inputs {
+    background: var(--secondary);
+    border-radius: 16px;
+    padding: 14px 20px;
+    box-shadow: 0 4px 20px #bcebdf8c;
+  }
+  .tracker-inputs label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #2c6d72;
+  }
+  .tracker-inputs input[type=number] {
+    width: 100%;
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 2px solid #aadbd7;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+  .tracker-inputs button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 5px 15px #3ec9b0bb;
+    transition: background 0.3s ease;
+  }
+  .tracker-inputs button:hover {
+    background: #2ca891;
+  }
+  .bmi-result {
+    font-weight: 700;
+    font-size: 1.05em;
+    color: #136053;
+    margin-top: 14px;
+  }
+  
+  /* Symptoms tracker */
+  .symptom-list {
+    max-height: 140px;
+    overflow-y: auto;
+    padding-left: 0;
+    margin-bottom: 14px;
+  }
+  .symptom-list li {
+    list-style: none;
+    padding: 8px 14px;
+    margin: 5px 0;
+    background: var(--bot-bubble);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: 600;
+    user-select: none;
+  }
+  .symptom-list li.selected {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px #58bea2cc;
+  }
+  
+  /* Section containers */
+  #feature-content {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 12px;
+  }
+  /* Hide scrollbar in WebKit */
+  #feature-content::-webkit-scrollbar {
+      width: 7px;
+  }
+  #feature-content::-webkit-scrollbar-thumb {
+      background-color: #9dd6cbb8;
+      border-radius: 20px;
+  }
+  #feature-content::-webkit-scrollbar-track {
+      background: transparent;
+  }
+
+  /* Water tracker progress bar and button */
+  #water-tracker-container {
+    margin: 12px 0 18px;
+  }
+  #add-glass-btn {
+    background: #3ec9b0;
+    color: white;
+    font-weight: 700;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px #6ae3c5aa;
+    transition: background 0.25s ease;
+    user-select: none;
+  }
+  #add-glass-btn:hover {
+    background: #2ca891;
+  }
+  #water-progress-container {
+    background: #eee;
+    border-radius: 25px;
+    margin-top: 10px;
+    width: 100%;
+    height: 28px;
+    overflow: hidden;
+    box-shadow: inset 0 0 6px #a0d3df;
+    position: relative;
+  }
+  #water-progress-bar {
+    background: #2f9aff;
+    width: 0%;
+    height: 100%;
+    transition: width 0.8s ease;
+  }
+  /* Burst animation */
+  @keyframes burstAnim {
+    0% {opacity:1; transform: scale(0);}
+    100% {opacity: 0; transform: scale(2.5);}
+  }
+  .burst {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, #5dc7ff 40%, transparent 70%);
+    width: 120px;
+    height: 120px;
+    opacity: 1;
+    animation: burstAnim 700ms forwards;
+    pointer-events: none;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  /* AUTH FORM */
+  .auth-form-container {
+    padding: 20px;
+    background: #fefefe;
+    border-radius: 14px;
+    box-shadow: 0 5px 25px #e8edea94;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .auth-form-container h2 {
+    color: var(--primary);
+    margin-bottom: 5px;
+  }
+  .auth-form-container input {
+    padding: 12px;
+    border: 2px solid #bdfbea;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  .auth-form-container button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 18px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: white;
+    background: var(--primary);
+    box-shadow: 0 4px 12px #6ae3c5aa;
+    transition: background 0.25s ease;
+  }
+  .auth-form-container button:hover {
+    background: #2ca891;
+  }
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+</head>
+
+<body>
+  <div class="container" role="main" aria-label="HealthBot public health chatbot">
+    <div class="header">
+      <span class="logo" aria-hidden="true">🩺</span>
+      <h1>HealthBot Plus</h1>
+      <select id="language-selector" aria-label="Select language">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+      </select>
+    </div>
+    <div class="alert-bar" role="alert" aria-live="polite">🛑 Dengue alert: High cases detected in your city. Prevent mosquito breeding & seek care for fever.</div>
+
+    <div class="section-buttons" role="navigation" aria-label="Select Features">
+      <button id="btn-chat" aria-controls="content-chat" aria-selected="true">Chat</button>
+      <button id="btn-quiz" aria-controls="content-quiz" aria-selected="false">Health Quiz</button>
+      <button id="btn-tracker" aria-controls="content-tracker" aria-selected="false">My Health Tracker</button>
+      <button id="btn-symptoms" aria-controls="content-symptoms" aria-selected="false">Symptom Checker</button>
+      <button id="btn-auth" aria-controls="content-auth" aria-selected="false">Account</button>
+    </div>
+
+    <div id="feature-content" tabindex="0">
+      <section id="content-chat" aria-live="polite" aria-label="Chat with HealthBot">
+        <div class="chatbox" id="chatbot-messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+        <form id="chatbot-form" class="input-area" autocomplete="off" aria-label="Send message form">
+          <input id="user-input" type="text" placeholder="Type your health question..." maxlength="250" aria-label="Type your health question" />
+          <button type="submit" aria-label="Send message">Send ➤</button>
+        </form>
+      </section>
+
+      <section id="content-quiz" aria-label="Health quiz" hidden>
+        <div class="quiz-container" role="region" aria-live="polite" aria-atomic="true">
+          <p class="quiz-question" id="quiz-question"></p>
+          <div class="quiz-options" role="radiogroup" aria-labelledby="quiz-question"></div>
+          <button class="quiz-submit-btn" id="quiz-submit" disabled>Submit Answer</button>
+          <p id="quiz-feedback" aria-live="polite"></p>
+          <p id="quiz-score"></p>
+          <button id="quiz-restart" hidden>Restart Quiz</button>
+        </div>
+      </section>
+
+      <section id="content-tracker" aria-label="Health tracker" hidden>
+        <div class="tracker-inputs" role="form" aria-describedby="tracker-desc">
+          <p id="tracker-desc">Enter your daily health data below to get personalized health advice:</p>
+          
+          <div id="water-tracker-container">
+            <label>Water Intake Tracker</label><br/>
+            <button id="add-glass-btn" aria-label="Add one glass of water (250ml)">Add a Glass (250ml) 💧</button>
+            <div id="water-progress-container" aria-label="Water intake progress bar">
+              <div id="water-progress-bar"></div>
+            </div>
+          </div>
+
+          <label for="input-steps">Steps walked today:</label>
+          <input type="number" min="0" id="input-steps" aria-describedby="steps-advice" />
+          <small id="steps-advice"></small>
+
+          <label for="input-weight">Weight (kg):</label>
+          <input type="number" step="0.1" min="10" max="500" id="input-weight" aria-describedby="bmi-desc" />
+          
+          <label for="input-height">Height (cm):</label>
+          <input type="number" step="0.1" min="50" max="300" id="input-height" aria-describedby="bmi-desc" />
+          <small id="bmi-desc">BMI = Weight / (Height in meters)^2</small>
+          <button id="btn-calculate-bmi" aria-describedby="bmi-feedback">Calculate BMI & Health Advice</button>
+          <p id="bmi-feedback" class="bmi-result" aria-live="polite"></p>
+          <button id="btn-save-health-data">Save Health Data</button>
+        </div>
+      </section>
+
+      <section id="content-symptoms" aria-label="Symptom checker" hidden>
+        <p>Select your symptoms from the list below (tap or click to select/deselect). If 5 or more symptoms match a disease, you will be alerted:</p>
+        <ul class="symptom-list" id="symptom-list" role="listbox" aria-multiselectable="true" tabindex="0">
+          </ul>
+        <button id="btn-check-symptoms" disabled>Check Possible Diseases</button>
+        <p id="symptom-result" aria-live="polite" style="margin-top: 1rem; font-weight: 700;"></p>
+      </section>
+
+      <section id="content-auth" aria-label="User authentication" hidden>
+        <div class="auth-form-container">
+          <h2>User Account</h2>
+          <input type="email" id="auth-email" placeholder="Email" required />
+          <input type="password" id="auth-password" placeholder="Password" required />
+          <button id="btn-signup">Sign Up</button>
+          <button id="btn-signin">Sign In</button>
+          <button id="btn-signout" hidden>Sign Out</button>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="footer">
+      <small>Source: <b>ICMR</b> • <b>WHO</b> • <b>MoHFW</b> | <a href="#">Privacy</a></small>
+    </div>
+  </div>
+
+  <script>
+    // Section tab logic
+    const btnChat = document.getElementById('btn-chat');
+    const btnQuiz = document.getElementById('btn-quiz');
+    const btnTracker = document.getElementById('btn-tracker');
+    const btnSymptoms = document.getElementById('btn-symptoms');
+    const btnAuth = document.getElementById('btn-auth');
+
+    const contentChat = document.getElementById('content-chat');
+    const contentQuiz = document.getElementById('content-quiz');
+    const contentTracker = document.getElementById('content-tracker');
+    const contentSymptoms = document.getElementById('content-symptoms');
+    const contentAuth = document.getElementById('content-auth');
+
+    function showSection(section) {
+      // Hide all
+      contentChat.hidden = true;
+      contentQuiz.hidden = true;
+      contentTracker.hidden = true;
+      contentSymptoms.hidden = true;
+      contentAuth.hidden = true;
+
+      btnChat.setAttribute('aria-selected', 'false');
+      btnQuiz.setAttribute('aria-selected', 'false');
+      btnTracker.setAttribute('aria-selected', 'false');
+      btnSymptoms.setAttribute('aria-selected', 'false');
+      btnAuth.setAttribute('aria-selected', 'false');
+
+      switch(section) {
+        case 'chat': 
+          contentChat.hidden = false; 
+          btnChat.setAttribute('aria-selected', 'true'); 
+          break;
+        case 'quiz': 
+          contentQuiz.hidden = false; 
+          btnQuiz.setAttribute('aria-selected', 'true'); 
+          startQuiz();
+          break;
+        case 'tracker': 
+          contentTracker.hidden = false; 
+          btnTracker.setAttribute('aria-selected', 'true'); 
+          break;
+        case 'symptoms': 
+          contentSymptoms.hidden = false; 
+          btnSymptoms.setAttribute('aria-selected', 'true'); 
+          break;
+        case 'auth':
+          contentAuth.hidden = false;
+          btnAuth.setAttribute('aria-selected', 'true');
+          break;
+      }
+    }
+
+    btnChat.onclick = () => showSection('chat');
+    btnQuiz.onclick = () => showSection('quiz');
+    btnTracker.onclick = () => showSection('tracker');
+    btnSymptoms.onclick = () => showSection('symptoms');
+    btnAuth.onclick = () => showSection('auth');
+
+    // Initialize default section
+    showSection('chat');
+
+    // FIREBASE AUTHENTICATION
+    // Replace with your actual Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyByESlcvsLGePTzg08Uh3vv1A6jQyyDkxI",
+      authDomain: "healthbot-51da4.firebaseapp.com",
+      projectId: "healthbot-51da4",
+      storageBucket: "healthbot-51da4.firebasestorage.app",
+      messagingSenderId: "353016218513",
+      appId: "1:353016218513:web:95d96acf185441430b5030"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const authEmail = document.getElementById('auth-email');
+    const authPassword = document.getElementById('auth-password');
+    const btnSignup = document.getElementById('btn-signup');
+    const btnSignin = document.getElementById('btn-signin');
+    const btnSignout = document.getElementById('btn-signout');
+
+    btnSignup.addEventListener('click', () => {
+      const email = authEmail.value;
+      const password = authPassword.value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          console.log("Signed up successfully!", userCredential.user);
+          alert("Account created!");
+          btnSignup.hidden = true;
+          btnSignin.hidden = true;
+          btnSignout.hidden = false;
+        })
+        .catch((error) => {
+          console.error("Error signing up:", error);
+          alert(error.message);
+        });
+    });
+
+    btnSignin.addEventListener('click', () => {
+      const email = authEmail.value;
+      const password = authPassword.value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          console.log("Signed in successfully!", userCredential.user);
+          alert("Signed in!");
+          btnSignup.hidden = true;
+          btnSignin.hidden = true;
+          btnSignout.hidden = true;
+        })
+        .catch((error) => {
+          console.error("Error signing in:", error);
+          alert(error.message);
+        });
+    });
+
+    btnSignout.addEventListener('click', () => {
+      auth.signOut()
+        .then(() => {
+          console.log("User signed out.");
+          alert("Signed out!");
+          btnSignup.hidden = false;
+          btnSignin.hidden = false;
+          btnSignout.hidden = true;
+        })
+        .catch((error) => {
+          console.error("Error signing out:", error);
+          alert(error.message);
+        });
+    });
+    // END FIREBASE AUTHENTICATION
+
+    // CHAT BOT SCRIPT
+    const form = document.getElementById('chatbot-form');
+    const input = document.getElementById('user-input');
+    const messages = document.getElementById('chatbot-messages');
+
+    function addMessage(text, sender) {
+      const msg = document.createElement('div');
+      msg.className = sender === 'bot' ? 'bot-msg' : 'user-msg';
+      msg.textContent = text;
+      messages.appendChild(msg);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function getBotResponse(userText) {
+      userText = userText.toLowerCase();
+      if (userText.includes('covid')) {
+        return "🦠 COVID-19: Wear a mask, sanitize hands, keep distance, and consult a doctor if symptoms persist.";
+      }
+      if (userText.includes('dengue')) {
+        return "🦟 Dengue: Use mosquito repellents, remove stagnant water, seek medical care for high fever or body pain.";
+      }
+      if (userText.includes('typhoid')) {
+        return "💉 Typhoid: Caused by bacteria, symptoms include high fever, weakness, stomach pain. Consult a doctor for antibiotics.";
+      }
+      if (userText.includes('malaria')) {
+        return "🦟 Malaria: Spread by mosquitoes causing cycles of fever, chills, sweating. Early diagnosis and treatment are vital.";
+      }
+      if (userText.includes('influenza') || userText.includes('flu')) {
+        return "🤧 Flu: Common viral infection with fever, cough, aches. Rest and hydration help; see a doctor if severe.";
+      }
+      if (userText.includes('tuberculosis') || userText.includes('tb')) {
+        return "🦠 Tuberculosis: Lung infection causing persistent cough, weight loss, night sweats. Requires medical treatment.";
+      }
+      if (userText.includes('tips') || userText.includes('prevention')) {
+        return "💡 Health Tips: Drink clean water, eat fresh foods, sleep well (7-8 hrs), and exercise regularly!";
+      }
+      if (userText.length < 6) {
+        return "Please provide more details so I can assist you better!";
+      }
+      return "I'm here to help! Ask about diseases like dengue, typhoid, covid, malaria, flu, tuberculosis, and more.";
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const userText = input.value.trim();
+      if (!userText) return;
+      addMessage(userText, 'user');
+      setTimeout(() => addMessage(getBotResponse(userText), 'bot'), 600);
+      input.value = '';
+      input.focus();
+    });
+
+    window.onload = () => {
+      addMessage("👋 Hello! Welcome to HealthBot Plus.\nAsk me about diseases, symptoms, or prevention tips!", 'bot');
+    };
+
+    // QUIZ FEATURE
+
+    const quizQuestions = [
+      {
+        q: "Which vitamin is essential for healthy vision?",
+        options: ["Vitamin A", "Vitamin C", "Vitamin B12", "Vitamin D"],
+        answer: 0
+      },
+      {
+        q: "How many minutes of moderate exercise is recommended daily for adults?",
+        options: ["10 mins", "30 mins", "60 mins", "90 mins"],
+        answer: 1
+      },
+      {
+        q: "Which of these is a common symptom of diabetes?",
+        options: ["Extreme thirst", "Hearing loss", "Hair loss", "Dry skin"],
+        answer: 0
+      },
+      {
+        q: "What is the normal body temperature (in Celsius)?",
+        options: ["35 °C", "36.5-37.5 °C", "39 °C", "40.5 °C"],
+        answer: 1
+      },
+      {
+        q: "Which disease is transmitted by mosquitoes?",
+        options: ["Malaria", "Flu", "Tuberculosis", "Diabetes"],
+        answer: 0
+      }
+    ];
+
+    const quizQuestionEl = document.getElementById('quiz-question');
+    const quizOptionsEl = document.querySelector('.quiz-options');
+    const quizSubmitBtn = document.getElementById('quiz-submit');
+    const quizFeedbackEl = document.getElementById('quiz-feedback');
+    const quizScoreEl = document.getElementById('quiz-score');
+    const quizRestartBtn = document.getElementById('quiz-restart');
+    
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let selectedAnswer = null;
+
+    function startQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      selectedAnswer = null;
+      quizFeedbackEl.textContent = '';
+      quizScoreEl.textContent = '';
+      quizRestartBtn.hidden = true;
+      quizSubmitBtn.disabled = true;
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      const quest = quizQuestions[currentQuestionIndex];
+      quizQuestionEl.textContent = `Q${currentQuestionIndex+1}. ${quest.q}`;
+      quizOptionsEl.innerHTML = '';
+      quest.options.forEach((opt, i) => {
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'quiz-option';
+        radio.id = `option-${i}`;
+        radio.value = i;
+        radio.setAttribute('aria-checked', 'false');
+        
+        const label = document.createElement('label');
+        label.htmlFor = `option-${i}`;
+        label.textContent = opt;
+
+        radio.addEventListener('change', () => {
+          selectedAnswer = parseInt(radio.value);
+          quizSubmitBtn.disabled = false;
+        });
+
+        quizOptionsEl.appendChild(radio);
+        quizOptionsEl.appendChild(label);
+      });
+    }
+
+    quizSubmitBtn.addEventListener('click', () => {
+      const correctAnswer = quizQuestions[currentQuestionIndex].answer;
+      if (selectedAnswer === correctAnswer) {
+        score++;
+        quizFeedbackEl.textContent = 'Correct ✅';
+      } else {
+        quizFeedbackEl.textContent = `Incorrect ❌. Correct answer: ${quizQuestions[currentQuestionIndex].options[correctAnswer]}`;
+      }
+      quizSubmitBtn.disabled = true;
+      selectedAnswer = null;
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizQuestions.length) {
+        setTimeout(() => {
+          quizFeedbackEl.textContent = '';
+          renderQuizQuestion();
+        }, 1800);
+      } else {
+        setTimeout(() => {
+          quizFeedbackEl.textContent = '';
+          quizScoreEl.textContent = `🏆 Quiz completed! Score: ${score} out of ${quizQuestions.length}`;
+          quizRestartBtn.hidden = false;
+        }, 1800);
+      }
+    });
+
+    quizRestartBtn.addEventListener('click', startQuiz);
+
+    // HEALTH TRACKER
+
+    const stepsInput = document.getElementById('input-steps');
+    const weightInput = document.getElementById('input-weight');
+    const heightInput = document.getElementById('input-height');
+    const stepsAdvice = document.getElementById('steps-advice');
+    const bmiFeedback = document.getElementById('bmi-feedback');
+    const bmiCalcBtn = document.getElementById('btn-calculate-bmi');
+    const btnSaveHealthData = document.getElementById('btn-save-health-data');
+
+    // Water tracker variables
+    const addGlassBtn = document.getElementById('add-glass-btn');
+    const progressBar = document.getElementById('water-progress-bar');
+    let currentWaterMl = 0;
+    const dailyGoalMl = 2000; // 2 liters
+    const glassMl = 250; // one glass of water
+
+    // Burst container
+    const burstContainer = document.createElement('div');
+    burstContainer.style.position = 'fixed';
+    burstContainer.style.top = '50%';
+    burstContainer.style.left = '50%';
+    burstContainer.style.transform = 'translate(-50%, -50%)';
+    burstContainer.style.pointerEvents = 'none';
+    burstContainer.style.zIndex = 1000;
+    document.body.appendChild(burstContainer);
+
+    function showBurst() {
+      const burst = document.createElement('div');
+      burst.className = 'burst';
+      burstContainer.appendChild(burst);
+      burst.addEventListener('animationend', () => burstContainer.removeChild(burst));
+    }
+
+    addGlassBtn.addEventListener('click', () => {
+      if(currentWaterMl >= dailyGoalMl) {
+        alert("You already reached your daily water goal! 🎉");
+        return;
+      }
+      currentWaterMl += glassMl;
+      if(currentWaterMl > dailyGoalMl) currentWaterMl = dailyGoalMl;
+
+      let percent = (currentWaterMl / dailyGoalMl) * 100;
+      progressBar.style.width = `${percent}%`;
+
+      if(percent >= 100) {
+        showBurst();
+      }
+    });
+
+    bmiCalcBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const steps = parseInt(stepsInput.value);
+      const weight = parseFloat(weightInput.value);
+      const heightCm = parseFloat(heightInput.value);
+      bmiFeedback.textContent = '';
+      stepsAdvice.textContent = '';
+
+      if (isNaN(steps) || steps < 0) {
+        stepsAdvice.textContent = 'Please enter a valid step count.';
+        return;
+      }
+      if (steps < 5000) {
+        stepsAdvice.textContent = "Try to walk at least 5000 steps daily for fitness.";
+      } else {
+        stepsAdvice.textContent = "Excellent! You're hitting your step goals. 🚶‍♂️";
+      }
+
+      if (isNaN(weight) || isNaN(heightCm) || weight <= 0 || heightCm <= 0) {
+        bmiFeedback.textContent = 'Enter valid weight and height to calculate BMI.';
+        return;
+      }
+      const heightM = heightCm / 100;
+      const bmi = weight / (heightM * heightM);
+      let advice = '';
+      if (bmi < 18.5) {
+        advice = 'You are underweight. Consider consulting a nutritionist.';
+      } else if (bmi < 24.9) {
+        advice = 'Your BMI is normal. Keep up the good work!';
+      } else if (bmi < 29.9) {
+        advice = 'You are overweight. A balanced diet and exercise can help.';
+      } else {
+        advice = 'Obese category. Consult your health provider for guidance.';
+      }
+      bmiFeedback.textContent = `BMI: ${bmi.toFixed(1)} — ${advice}`;
+    });
+
+    const BACKEND_API_URL = "https://healthbotplus.onrender.com";
+
+    btnSaveHealthData.addEventListener('click', async () => {
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        alert("Please sign in to save your data.");
+        return;
+      }
+
+      const steps = parseInt(stepsInput.value) || 0;
+      const weight = parseFloat(weightInput.value) || 0;
+      const heightCm = parseFloat(heightInput.value) || 0;
+      const waterIntake = currentWaterMl;
+
+      try {
+        const response = await fetch(`${BACKEND_API_URL}/api/saveHealthData`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.uid,
+            steps,
+            weight,
+            height: heightCm,
+            waterIntake
+          }),
+        });
+
+        if (response.ok) {
+          alert("Your health data has been saved!");
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.message);
+        }
+      } catch (error) {
+        console.error('Error saving data:', error);
+        alert(`Failed to save data: ${error.message}`);
+      }
+    });
+
+    // SYMPTOM CHECKER
+
+    // Disease database with symptoms -- major 12 diseases and their symptoms
+    const diseases = [
+      {
+        name: "COVID-19",
+        symptoms: ["fever", "cough", "fatigue", "loss of smell", "loss of taste", "difficulty breathing", "headache"]
+      },
+      {
+        name: "Dengue",
+        symptoms: ["high fever", "severe headache", "joint pain", "rash", "muscle pain", "fatigue", "nausea"]
+      },
+      {
+        name: "Malaria",
+        symptoms: ["fever", "chills", "sweats", "headache", "nausea", "vomiting", "fatigue"]
+      },
+      {
+        name: "Typhoid",
+        symptoms: ["high fever", "weakness", "stomach pain", "headache", "loss of appetite", "rash"]
+      },
+      {
+        name: "Influenza",
+        symptoms: ["fever", "cough", "sore throat", "muscle aches", "fatigue", "runny nose"]
+      },
+      {
+        name: "Tuberculosis",
+        symptoms: ["cough", "fever", "night sweats", "weight loss", "fatigue"]
+      },
+      {
+        name: "Chikungunya",
+        symptoms: ["fever", "joint pain", "headache", "muscle pain", "rash"]
+      },
+      {
+        name: "Asthma",
+        symptoms: ["shortness of breath", "wheezing", "cough", "chest tightness"]
+      },
+      {
+        name: "Pneumonia",
+        symptoms: ["fever", "cough", "shortness of breath", "chest pain", "fatigue"]
+      },
+      {
+        name: "Gastroenteritis",
+        symptoms: ["diarrhea", "nausea", "vomiting", "stomach ache", "fever"]
+      },
+      {
+        name: "Bronchitis",
+        symptoms: ["cough", "mucus", "fatigue", "shortness of breath", "chest discomfort"]
+      },
+      {
+        name: "Common Cold",
+        symptoms: ["runny nose", "sore throat", "cough", "sneezing", "headache"]
+      }
+    ];
+
+    const symptomListEl = document.getElementById('symptom-list');
+    const btnCheckSymptoms = document.getElementById('btn-check-symptoms');
+    const symptomResult = document.getElementById('symptom-result');
+
+    // Gather all unique symptoms from diseases
+    let allSymptoms = [];
+    diseases.forEach(d => d.symptoms.forEach(s => {
+      if (!allSymptoms.includes(s)) allSymptoms.push(s);
+    }));
+    allSymptoms.sort();
+
+    // Create symptom items
+    allSymptoms.forEach(symptom => {
+      const li = document.createElement('li');
+      li.textContent = symptom;
+      li.setAttribute('tabindex', '0');
+      li.setAttribute('role', 'option');
+      li.setAttribute('aria-selected', 'false');
+      li.addEventListener('click', () => toggleSymptom(li));
+      li.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleSymptom(li);
+        }
+      });
+      symptomListEl.appendChild(li);
+    });
+
+    let selectedSymptoms = new Set();
+
+    function toggleSymptom(li) {
+      const symptom = li.textContent;
+      if (selectedSymptoms.has(symptom)) {
+        selectedSymptoms.delete(symptom);
+        li.classList.remove('selected');
+        li.setAttribute('aria-selected', 'false');
+      } else {
+        selectedSymptoms.add(symptom);
+        li.classList.add('selected');
+        li.setAttribute('aria-selected', 'true');
+      }
+      btnCheckSymptoms.disabled = selectedSymptoms.size === 0;
+      symptomResult.textContent = '';
+    }
+
+    btnCheckSymptoms.addEventListener('click', () => {
+      if (selectedSymptoms.size === 0) return;
+      symptomResult.textContent = '';
+
+      // For each disease, count symptom matches
+      const symptomArr = Array.from(selectedSymptoms);
+      const matches = [];
+      diseases.forEach(d => {
+        let count = 0;
+        d.symptoms.forEach(s => {
+          if (symptomArr.includes(s)) count++;
+        });
+        if (count >= 5) {
+          matches.push({name: d.name, matched: count});
+        }
+      });
+      if (matches.length > 0) {
+        symptomResult.textContent = `⚠️ Based on your symptoms, you might have: ${matches.map(m => m.name).join(', ')}.\nPlease consult a doctor for diagnosis and treatment.`;
+      } else {
+        symptomResult.textContent = "✅ No major disease matches with 5 or more symptoms. If you feel unwell, see your healthcare provider.";
+      }
+    });
+  </script>
+</body>
+</html>
